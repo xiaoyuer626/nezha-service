@@ -97,6 +97,10 @@ E[41]="Default: enable automatic online synchronization of the latest backup.sh 
 C[41]="默认开启自动在线同步最新 backup.sh 和 restore.sh 脚本的功能，如不需要该功能，请输入 [n]:"
 E[42]="The DASHBOARD_VERSION variable should be in a format like v0.00.00 or left blank. Please check."
 C[42]="变量 DASHBOARD_VERSION 必须以 v0.00.00 的格式或者留空，请检查"
+E[43]="Please enter the required backup time (default is Cron expression: 0 4 * * *):"
+C[43]="请输入需要的备份时间(默认为Cron表达式：0 4 * * *):"
+E[44]="Please enter the number of backups to be retained in the backup repository (default is 5):"
+C[44]="请输入备份仓库里所保留的备份数量(默认为 5):"
 
 # 自定义字体彩色，read 函数
 warning() { echo -e "\033[31m\033[01m$*\033[0m"; }  # 红色
@@ -275,7 +279,7 @@ certificate() {
 
 dashboard_variables() {
 # 询问版本自动后台下载
-  [ -z "$DASHBOARD_VERSION" ] && reading "\n (1/12) $(text 40) " DASHBOARD_VERSION
+  [ -z "$DASHBOARD_VERSION" ] && reading "\n (1/14) $(text 40) " DASHBOARD_VERSION
   if [ -z "$DASHBOARD_VERSION" ]; then
     { wget -qO $TEMP_DIR/dashboard.zip ${GH_PROXY}https://github.com/nezhahq/nezha/releases/latest/download/dashboard-linux-$ARCH.zip >/dev/null 2>&1; }&
   elif [[ "$DASHBOARD_VERSION" =~ [0-1]{1}\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; then
@@ -285,12 +289,12 @@ dashboard_variables() {
     error "\n $(text 42) \n"
   fi
 
-  [ -z "$GH_USER" ] && reading " (2/12) $(text 9) " GH_USER
-  [ -z "$GH_CLIENTID" ] && reading "\n (3/12) $(text 10) " GH_CLIENTID
-  [ -z "$GH_CLIENTSECRET" ] && reading "\n (4/12) $(text 11) " GH_CLIENTSECRET
+  [ -z "$GH_USER" ] && reading " (2/14) $(text 9) " GH_USER
+  [ -z "$GH_CLIENTID" ] && reading "\n (3/14) $(text 10) " GH_CLIENTID
+  [ -z "$GH_CLIENTSECRET" ] && reading "\n (4/14) $(text 11) " GH_CLIENTSECRET
   local a=5
   until [[ "$ARGO_AUTH" =~ TunnelSecret || "$ARGO_AUTH" =~ ^[A-Z0-9a-z=]{120,250}$ || "$ARGO_AUTH" =~ .*cloudflared.*service[[:space:]]+install[[:space:]]+[A-Z0-9a-z=]{1,100} ]]; do
-    [ "$a" = 0 ] && error "\n $(text 3) \n" || reading "\n (5/12) $(text 12) " ARGO_AUTH
+    [ "$a" = 0 ] && error "\n $(text 3) \n" || reading "\n (5/14) $(text 12) " ARGO_AUTH
     if [[ "$ARGO_AUTH" =~ TunnelSecret ]]; then
       ARGO_JSON=${ARGO_AUTH//[ ]/}
     elif [[ "$ARGO_AUTH" =~ ^[A-Z0-9a-z=]{120,250}$ ]]; then
@@ -304,12 +308,12 @@ dashboard_variables() {
   done
 
   # 处理可能输入的错误，去掉开头和结尾的空格，去掉最后的 :
-  [ -z "$ARGO_DOMAIN" ] && reading "\n (6/12) $(text 13) " ARGO_DOMAIN
+  [ -z "$ARGO_DOMAIN" ] && reading "\n (6/14) $(text 13) " ARGO_DOMAIN
   ARGO_DOMAIN=$(sed 's/[ ]*//g; s/:[ ]*//' <<< "$ARGO_DOMAIN")
   { certificate; }&
 
   # # 用户选择使用 gRPC 反代方式: Nginx / Caddy / grpcwebproxy，默认为 Caddy
-  [ -z "$REVERSE_PROXY_MODE" ] && info "\n (7/12) $(text 38) \n" && reading " $(text 24) " REVERSE_PROXY_CHOOSE
+  [ -z "$REVERSE_PROXY_MODE" ] && info "\n (7/14) $(text 38) \n" && reading " $(text 24) " REVERSE_PROXY_CHOOSE
   case "$REVERSE_PROXY_CHOOSE" in
     2 ) REVERSE_PROXY_MODE=nginx ;;
     3 ) REVERSE_PROXY_MODE=grpcwebproxy ;;
@@ -322,15 +326,25 @@ dashboard_variables() {
     [[ -z "$ARGO_AUTH" || -z "$ARGO_DOMAIN" ]] && error "\n $(text 18) "
   fi
 
-  [ -z "$GH_REPO"] && reading "\n (8/12) $(text 14) " GH_REPO
+  [ -z "$GH_REPO"] && reading "\n (8/14) $(text 14) " GH_REPO
   if [ -n "$GH_REPO" ]; then
-    [ -z "$GH_BACKUP_USER" ] && reading "\n (9/12) $(text 15) " GH_BACKUP_USER
+    [ -z "$GH_BACKUP_USER" ] && reading "\n (9/14) $(text 15) " GH_BACKUP_USER
     GH_BACKUP_USER=${GH_BACKUP_USER:-$GH_USER}
-    [ -z "$GH_EMAIL"] && reading "\n (10/12) $(text 16) " GH_EMAIL
-    [ -z "$GH_PAT"] && reading "\n (11/12) $(text 17) " GH_PAT
+    [ -z "$GH_EMAIL"] && reading "\n (10/14) $(text 16) " GH_EMAIL
+    [ -z "$GH_PAT"] && reading "\n (11/14) $(text 17) " GH_PAT
   fi
 
-  [ -z "$AUTO_RENEW_OR_NOT"] && reading "\n (12/12) $(text 41) " AUTO_RENEW_OR_NOT
+  [ -z "$BACKUP_TIME"] && reading "\n (12/14) $(text 43) " BACKUP_TIME
+  if [ -z "$BACKUP_TIME" ]; then
+    BACKUP_TIME="0 4 * * *"
+  fi
+
+  [ -z "$BACKUP_NUM"] && reading "\n (13/14) $(text 44) " BACKUP_NUM
+  if [ -z "$BACKUP_NUM" ]; then
+    BACKUP_NUM=5
+  fi
+
+  [ -z "$AUTO_RENEW_OR_NOT"] && reading "\n (14/14) $(text 41) " AUTO_RENEW_OR_NOT
   grep -qiw 'n' <<< "$AUTO_RENEW_OR_NOT" && IS_AUTO_RENEW=#
 }
 

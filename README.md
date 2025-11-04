@@ -6,7 +6,7 @@
 
 - docker镜像 `mikehand888/argo-nezha:latest` ， 支持 amd64 和 arm64 架构。
 
-- VPS部署
+- VPS脚本部署
 
 ```
 bash <(wget -qO- https://raw.githubusercontent.com/Kiritocyz/Argo-Nezha-Service-Container/main/dashboard.sh)
@@ -30,7 +30,7 @@ bash <(wget -qO- https://raw.githubusercontent.com/Kiritocyz/Argo-Nezha-Service-
 - 2025.04.14
   - 经过4天的测试，argo-nezha兼容v0和v1版本可以正常使用。
 
-## 环境变量说明
+## docker版本环境变量说明
 
   | 变量名        | 是否必须  | 备注 |
   | ------------ | ------   | ---- |
