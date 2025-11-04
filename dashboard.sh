@@ -507,6 +507,7 @@ oauth2:
      user_info_url: "https://api.github.com/user"
      user_id_path: "id"
 EOF
+    fi
   fi
 
   # 判断 ARGO_AUTH 为 json 还是 token
