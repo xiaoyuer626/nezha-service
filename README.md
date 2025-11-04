@@ -1,13 +1,23 @@
 # Argo-Nezha-Service-Container 兼容 v0 和 v1
 
-- 本项目**兼容了nezha的v0和v1版本**，基于fscarmen大佬的 [Argo-Nezha-Service-Container](https://github.com/fscarmen2/Argo-Nezha-Service-Container) 修改并结合dsadsadsss大佬的 [Docker-for-Nezha-Argo-server-v0.x](https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x) 所得。
+- 本项目**兼容了nezha的v0和v1版本**，基于fscarmen大佬的 [Argo-Nezha-Service-Container](https://github.com/fscarmen2/Argo-Nezha-Service-Container) 修改。
 
-- 目前仅有docker镜像 `mikehand888/argo-nezha:latest` ， 支持 amd64 和 arm64 架构。
+- docker版本还结合了dsadsadsss大佬的 [Docker-for-Nezha-Argo-server-v0.x](https://github.com/dsadsadsss/Docker-for-Nezha-Argo-server-v0.x) 。
+
+- docker镜像 `mikehand888/argo-nezha:latest` ， 支持 amd64 和 arm64 架构。
+
+- VPS部署
+
+```
+bash <(wget -qO- https://raw.githubusercontent.com/Kiritocyz/Argo-Nezha-Service-Container/main/dashboard.sh)
+```
 
 - 使用前，**请先阅读 [F佬原项目教程](https://github.com/Kiritocyz/Argo-Nezha-Service-Container#f%E4%BD%AC%E5%8E%9F%E9%A1%B9%E7%9B%AE%E6%95%99%E7%A8%8B)** ，了解具体如何部署，本项目仅在环境变量上有所不同。
 
 ## 更新日志
-
+- 2025.11.4
+  - 修复v1面板的固定版本问题。
+  - 开始测试vps脚本。
 - 2025.07.14
   - 增加了`AGENT_VERSION`变量以控制探针版本。
   - docker版本目前已很完善，不出意外以后将佛系更新（其实nezha官方也已步入稳定周期）。
